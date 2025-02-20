@@ -1,30 +1,32 @@
-📅 Event Calendar (SERN Stack)
-An interactive event calendar built with SQL, Express.js, React, and Node.js, featuring event management functionalities such as adding, updating, and deleting events. The calendar supports month, week, day, and agenda views, with intuitive navigation buttons for viewing past and upcoming events.
+# 📅 Event Calendar (SERN Stack)
 
-✨ Features
-📌 Add Events – Click the "Add Event" button or directly on the calendar to create an event.
-✏️ Update & Delete Events – Modify or remove existing events effortlessly.
-📅 Agenda View – See a list of events starting from today.
-⏩ Navigation Controls – Move forward or backward through the calendar or return to Today by default.
-🔍 Filtering Options – Switch between Month, Week, Day, and Agenda views.
-🛠️ Technologies Used
-Frontend
-React – UI framework
-React Big Calendar – Interactive calendar component
-Moment.js – Date formatting and localization
-Axios – API requests
-React DatePicker – Date selection UI
-Backend
-Node.js – Server environment
-Express.js – Backend framework
-MySQL – Database
-Body-Parser – Middleware for handling request bodies
-CORS – Cross-origin resource sharing
-📌 Usage
-Click "Add Event" to create a new event.
-Click on an existing event to edit or delete it.
-Use the navigation buttons to switch between different dates.
-Select a view mode (Month, Week, Day, or Agenda) to customize your display.
+A full-featured event calendar built using **SQL, Express.js, React, and Node.js (SERN stack)**. This interactive calendar allows users to add, update, and delete events, view agendas, and navigate through different timeframes.
+
+## ✨ Features
+
+- 📌 **Add Events** – Create an event by clicking the "Add Event" button or directly on the calendar.
+- ✏️ **Update & Delete Events** – Modify or remove existing events effortlessly.
+- 📅 **Agenda View** – Displays a list of upcoming events starting from today.
+- ⏳ **Timeframe Navigation** – Switch between **Month, Week, Day, and Agenda** views.
+- ⏩ **Next/Previous Navigation** – Easily view past and upcoming events using navigation buttons.
+- 🎯 **Today Button** – Default view is set to the current day for quick access.
+
+## 🛠️ Technologies Used
+
+### **Frontend**
+- **React.js** – Component-based UI framework
+- **React Big Calendar** – Calendar component for event management
+- **Moment.js** – Date and time formatting
+- **React Datepicker** – Date selection for event scheduling
+- **Axios** – API calls for backend communication
+
+### **Backend**
+- **Node.js** – JavaScript runtime for server-side logic
+- **Express.js** – Fast and minimal backend framework
+- **MySQL** – Relational database for storing events
+- **Body-parser** – Middleware to parse incoming request data
+- **CORS** – Handles cross-origin resource sharing
+
 
 ![image](https://github.com/user-attachments/assets/22602d37-42e5-4d5b-9e5c-4710642a9855)
 ![image](https://github.com/user-attachments/assets/a62037fd-1c4f-47fb-8253-494ba8280546)
