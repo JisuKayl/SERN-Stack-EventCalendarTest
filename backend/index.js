@@ -23,7 +23,12 @@ db.connect((err) => {
 app.get("/api/events", (req, res) => {
   const sql = "SELECT * FROM events";
   db.query(sql, (err, results) => {
-    if (err) throw err;
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error", details: err.message });
+    }
     res.json(results);
   });
 });
@@ -31,17 +36,28 @@ app.get("/api/events", (req, res) => {
 app.post("/api/events", (req, res) => {
   const { title, start, end } = req.body;
 
-  const startFormatted = moment("2025-02-18T16:00:00.000Z").format(
-    "YYYY-MM-DD HH:mm:ss"
-  );
-  const endFormatted = moment("2025-02-19T16:00:00.000Z").format(
-    "YYYY-MM-DD HH:mm:ss"
-  );
+  if (!title || !start || !end) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  if (new Date(end) < new Date(start)) {
+    return res
+      .status(400)
+      .json({ error: "End time cannot be earlier than start time" });
+  }
+
+  const startFormatted = moment(start).format("YYYY-MM-DD HH:mm:ss");
+  const endFormatted = moment(end).format("YYYY-MM-DD HH:mm:ss");
 
   const sql = "INSERT INTO events (title, start, end) VALUES (?, ?, ?)";
   db.query(sql, [title, startFormatted, endFormatted], (err, result) => {
-    if (err) throw err;
-    res.json({
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error", details: err.message });
+    }
+    res.status(201).json({
       id: result.insertId,
       title,
       start: startFormatted,
@@ -50,13 +66,103 @@ app.post("/api/events", (req, res) => {
   });
 });
 
+app.put("/api/events/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, start, end } = req.body;
+
+  if (!title || !start || !end) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  if (new Date(end) < new Date(start)) {
+    return res
+      .status(400)
+      .json({ error: "End time cannot be earlier than start time" });
+  }
+
+  const startFormatted = moment(start).format("YYYY-MM-DD HH:mm:ss");
+  const endFormatted = moment(end).format("YYYY-MM-DD HH:mm:ss");
+
+  const checkSql = "SELECT * FROM events WHERE id = ?";
+  db.query(checkSql, [id], (checkErr, checkResults) => {
+    if (checkErr) {
+      console.error("Database error:", checkErr);
+      return res
+        .status(500)
+        .json({ error: "Database error", details: checkErr.message });
+    }
+
+    if (checkResults.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const updateSql =
+      "UPDATE events SET title = ?, start = ?, end = ? WHERE id = ?";
+    db.query(
+      updateSql,
+      [title, startFormatted, endFormatted, id],
+      (updateErr, updateResult) => {
+        if (updateErr) {
+          console.error("Database error:", updateErr);
+          return res
+            .status(500)
+            .json({ error: "Database error", details: updateErr.message });
+        }
+
+        if (updateResult.affectedRows === 0) {
+          return res
+            .status(404)
+            .json({ error: "Event not found or no changes made" });
+        }
+
+        res.json({
+          id: parseInt(id),
+          title,
+          start: startFormatted,
+          end: endFormatted,
+        });
+      }
+    );
+  });
+});
+
 app.delete("/api/events/:id", (req, res) => {
   const { id } = req.params;
-  const sql = "DELETE FROM events WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
-    if (err) throw err;
-    res.json({ success: true });
+
+  const checkSql = "SELECT * FROM events WHERE id = ?";
+  db.query(checkSql, [id], (checkErr, checkResults) => {
+    if (checkErr) {
+      console.error("Database error:", checkErr);
+      return res
+        .status(500)
+        .json({ error: "Database error", details: checkErr.message });
+    }
+
+    if (checkResults.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const deleteSql = "DELETE FROM events WHERE id = ?";
+    db.query(deleteSql, [id], (deleteErr, deleteResult) => {
+      if (deleteErr) {
+        console.error("Database error:", deleteErr);
+        return res
+          .status(500)
+          .json({ error: "Database error", details: deleteErr.message });
+      }
+
+      res.json({ success: true, id: parseInt(id) });
+    });
   });
+});
+
+app.use((req, res) => {
+  res.status(404).json({ error: "Endpoint not found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Server error", details: err.message });
 });
 
 const PORT = 5000;
