@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
+import moment from "moment-timezone";
 import axios from "axios";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import DatePicker from "react-datepicker";
@@ -14,10 +14,10 @@ function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("month");
   const [eventTitle, setEventTitle] = useState("");
-  const [eventStart, setEventStart] = useState(new Date());
-  const [eventEnd, setEventEnd] = useState(
-    new Date(new Date().getTime() + 60 * 60 * 1000)
+  const [eventStart, setEventStart] = useState(
+    moment().tz("Asia/Manila").toDate()
   );
+  const [eventEnd, setEventEnd] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentEventId, setCurrentEventId] = useState(null);
@@ -44,9 +44,9 @@ function App() {
 
   const handleAddEventButtonClick = () => {
     setValidationError("");
-    const now = new Date();
-    setEventStart(now);
-    setEventEnd(new Date(now.getTime() + 60 * 60 * 1000));
+    const philippineTime = moment().tz("Asia/Manila").toDate();
+    setEventStart(philippineTime);
+    setEventEnd(null);
     setEventTitle("");
     setEditMode(false);
     setCurrentEventId(null);
@@ -56,7 +56,7 @@ function App() {
   const handleAddEvent = (slotInfo) => {
     setValidationError("");
     setEventStart(slotInfo.start);
-    setEventEnd(slotInfo.end);
+    setEventEnd(null);
     setEventTitle("");
     setEditMode(false);
     setCurrentEventId(null);
@@ -91,6 +91,11 @@ function App() {
   const validateEvent = () => {
     if (!eventTitle.trim()) {
       setValidationError("Event title is required");
+      return false;
+    }
+
+    if (!eventEnd) {
+      setValidationError("End time is required");
       return false;
     }
 
@@ -164,13 +169,6 @@ function App() {
     setView(newView);
   };
 
-  const handleStartDateChange = (date) => {
-    setEventStart(date);
-    if (eventEnd < date) {
-      setEventEnd(new Date(date.getTime() + 60 * 60 * 1000));
-    }
-  };
-
   return (
     <div className="calendar-container">
       <div className="calendar-header">
@@ -209,7 +207,7 @@ function App() {
             )}
 
             <div className="form-group">
-              <label>Event Title</label>
+              <label>Event Title*</label>
               <input
                 type="text"
                 value={eventTitle}
@@ -221,10 +219,10 @@ function App() {
             </div>
 
             <div className="form-group">
-              <label>Start Time</label>
+              <label>Start Time*</label>
               <DatePicker
                 selected={eventStart}
-                onChange={handleStartDateChange}
+                onChange={(date) => setEventStart(date)}
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
@@ -235,23 +233,18 @@ function App() {
             </div>
 
             <div className="form-group">
-              <label>End Time</label>
+              <label>End Time*</label>
               <DatePicker
                 selected={eventEnd}
-                onChange={setEventEnd}
+                onChange={(date) => setEventEnd(date)}
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 timeCaption="Time"
                 dateFormat="MMMM d, yyyy h:mm aa"
                 className="form-control"
-                minDate={new Date(eventStart)}
-                minTime={
-                  eventStart.getDate() === new Date(eventEnd).getDate()
-                    ? new Date(eventStart.getTime())
-                    : new Date(eventStart.setHours(0, 0, 0, 0))
-                }
-                maxTime={new Date(eventStart.setHours(23, 59, 0, 0))}
+                placeholderText="Select end time"
+                minDate={eventStart}
               />
             </div>
 
