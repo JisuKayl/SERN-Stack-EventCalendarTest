@@ -14,6 +14,7 @@ function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("month");
   const [eventTitle, setEventTitle] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
   const [eventStart, setEventStart] = useState(
     moment().tz("Asia/Manila").toDate()
   );
@@ -48,6 +49,7 @@ function App() {
     setEventStart(philippineTime);
     setEventEnd(null);
     setEventTitle("");
+    setEventDescription("");
     setEditMode(false);
     setCurrentEventId(null);
     setShowEventModal(true);
@@ -58,6 +60,7 @@ function App() {
     setEventStart(slotInfo.start);
     setEventEnd(null);
     setEventTitle("");
+    setEventDescription("");
     setEditMode(false);
     setCurrentEventId(null);
     setShowEventModal(true);
@@ -66,6 +69,7 @@ function App() {
   const handleSelectEvent = (event) => {
     setValidationError("");
     setEventTitle(event.title);
+    setEventDescription(event.description || "");
     setEventStart(new Date(event.start));
     setEventEnd(new Date(event.end));
     setCurrentEventId(event.id);
@@ -83,7 +87,15 @@ function App() {
         })
         .catch((error) => {
           console.error(error);
-          alert("Failed to delete event. Please try again.");
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error
+          ) {
+            setValidationError(error.response.data.error);
+          } else {
+            setValidationError("Failed to delete event. Please try again.");
+          }
         });
     }
   };
@@ -115,6 +127,7 @@ function App() {
 
     const eventData = {
       title: eventTitle,
+      description: eventDescription,
       start: eventStart,
       end: eventEnd,
     };
@@ -138,7 +151,15 @@ function App() {
         })
         .catch((error) => {
           console.error(error);
-          alert("Failed to update event. Please try again.");
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error
+          ) {
+            setValidationError(error.response.data.error);
+          } else {
+            setValidationError("Failed to update event. Please try again.");
+          }
         });
     } else {
       axios
@@ -156,7 +177,15 @@ function App() {
         })
         .catch((error) => {
           console.error(error);
-          alert("Failed to create event. Please try again.");
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error
+          ) {
+            setValidationError(error.response.data.error);
+          } else {
+            setValidationError("Failed to create event. Please try again.");
+          }
         });
     }
   };
@@ -167,6 +196,47 @@ function App() {
 
   const handleView = (newView) => {
     setView(newView);
+  };
+
+  const eventStyleGetter = (event, start, end, isSelected) => {
+    if (view === "agenda") {
+      return {
+        style: {
+          backgroundColor: "transparent",
+        },
+      };
+    }
+    return {
+      style: {
+        backgroundColor: "#4285f4",
+        border: "none",
+      },
+    };
+  };
+
+  const formats = {
+    agendaEventFormat: (event, culture, localizer) => {
+      return event.title;
+    },
+  };
+
+  const components = {
+    agenda: {
+      event: ({ event }) => (
+        <div style={{ margin: "4px 0" }}>
+          <div style={{ fontWeight: "bold", color: "#000" }}>
+            Title: {event.title}
+          </div>
+          {event.description && (
+            <div
+              style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}
+            >
+              Description: {event.description}
+            </div>
+          )}
+        </div>
+      ),
+    },
   };
 
   return (
@@ -194,6 +264,12 @@ function App() {
           onNavigate={handleNavigate}
           view={view}
           onView={handleView}
+          eventPropGetter={eventStyleGetter}
+          tooltipAccessor={(event) =>
+            `${event.title}${event.description ? "\n" + event.description : ""}`
+          }
+          formats={formats}
+          components={components}
         />
       </div>
 
@@ -215,6 +291,17 @@ function App() {
                 className="form-control"
                 placeholder="Enter event title"
                 autoFocus
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea
+                value={eventDescription}
+                onChange={(e) => setEventDescription(e.target.value)}
+                className="form-control"
+                placeholder="Enter event description"
+                rows="3"
               />
             </div>
 
