@@ -27,14 +27,8 @@ A full-featured event calendar built using **SQL, Express.js, React, and Node.js
 - **Body-parser** – Middleware to parse incoming request data
 - **CORS** – Handles cross-origin resource sharing
 
-![image](https://github.com/user-attachments/assets/97b723ef-4a40-4e04-b52e-0b4470fa252e)
-![image](https://github.com/user-attachments/assets/10f1e634-1427-40ea-ab64-2bc1deef6688)
-![image](https://github.com/user-attachments/assets/9648ac77-e1ec-4cc9-9761-b87eed9f5724)
-![image](https://github.com/user-attachments/assets/9cfc0557-606a-4c01-ab70-41ce1ecbe9a0)
-![image](https://github.com/user-attachments/assets/0a854795-5f9f-4c66-b0cc-7bac45e60bb8)
-![image](https://github.com/user-attachments/assets/50e78c60-9b39-4b12-80ea-40d797a9052b)
-
-
-
-
-
+![image](https://github.com/user-attachments/assets/5138cded-0616-4242-b981-2cf51eec249a)
+![image](https://github.com/user-attachments/assets/c891e63a-b2c2-4d86-ae14-7c0d7dc81e57)
+![image](https://github.com/user-attachments/assets/c10ebfb0-cbd2-4d09-a02d-096c02775167)
+![image](https://github.com/user-attachments/assets/7fcea116-e921-473c-bb76-dcac1b77ea2a)
+![image](https://github.com/user-attachments/assets/0740655c-e28c-4d06-b290-461c6b730ce5)
