@@ -23,14 +23,21 @@ function App() {
   const [editMode, setEditMode] = useState(false);
   const [currentEventId, setCurrentEventId] = useState(null);
   const [validationError, setValidationError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [searchQuery]);
 
   const fetchEvents = () => {
+    const url = searchQuery
+      ? `http://localhost:5000/api/events/search?q=${encodeURIComponent(
+          searchQuery
+        )}`
+      : "http://localhost:5000/api/events";
+
     axios
-      .get("http://localhost:5000/api/events")
+      .get(url)
       .then((response) => {
         setEvents(
           response.data.map((event) => ({
@@ -227,13 +234,9 @@ function App() {
           <div style={{ fontWeight: "bold", color: "#000" }}>
             Title: {event.title}
           </div>
-          {event.description && (
-            <div
-              style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}
-            >
-              Description: {event.description}
-            </div>
-          )}
+          <div style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}>
+            Description: {event.description ? event.description : "(none)"}
+          </div>
         </div>
       ),
     },
@@ -243,12 +246,21 @@ function App() {
     <div className="calendar-container">
       <div className="calendar-header">
         <h1>Event Calendar</h1>
-        <button
-          className="add-event-button"
-          onClick={handleAddEventButtonClick}
-        >
-          Add Event
-        </button>
+        <div className="header-controls">
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+          <button
+            className="add-event-button"
+            onClick={handleAddEventButtonClick}
+          >
+            Add Event
+          </button>
+        </div>
       </div>
 
       <div className="calendar-wrapper">

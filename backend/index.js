@@ -33,6 +33,29 @@ app.get("/api/events", (req, res) => {
   });
 });
 
+app.get("/api/events/search", (req, res) => {
+  const searchQuery = req.query.q;
+  if (!searchQuery) {
+    return res.status(400).json({ error: "Search query is required" });
+  }
+
+  const sql = `
+    SELECT * FROM events 
+    WHERE title LIKE ? OR description LIKE ?
+  `;
+  const searchTerm = `%${searchQuery}%`;
+
+  db.query(sql, [searchTerm, searchTerm], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error", details: err.message });
+    }
+    res.json(results);
+  });
+});
+
 app.post("/api/events", (req, res) => {
   const { title, description, start, end } = req.body;
 
