@@ -1,4 +1,4 @@
-# 📅 Event Calendar using React-Big-Calendar (SERN Stack)
+# 📅 Event Calendar using React-Big-Calendar
 
 A full-featured event calendar built using **SQL, Express.js, React, and Node.js (SERN stack)**. This interactive calendar allows users to add, update, and delete events, view agendas, and navigate through different timeframes.
 
